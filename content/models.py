@@ -8,6 +8,6 @@ class Video(models.Model):
   description = models.CharField(max_length=500)
   video_file = models.FileField(upload_to='videos/', blank=True, null=True)
 
-def __str__(self):
-    # return self.title
-    return f"{self.title} ({self.created_at})"
+  def __str__(self):
+      # return self.title
+      return f"{self.title} ({self.created_at}) - {self.description}"
