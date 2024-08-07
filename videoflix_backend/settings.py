@@ -53,6 +53,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+INTERNAL_IPS = [
+    # Füge deine IP-Adresse hinzu. Zum Beispiel:
+    '127.0.0.1',
+]
 
 CACHES = {
     "default": {
