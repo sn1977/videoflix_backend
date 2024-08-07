@@ -8,6 +8,7 @@ media
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+static
 
 # Backup files # 
 *.bak 
@@ -117,3 +118,4 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+

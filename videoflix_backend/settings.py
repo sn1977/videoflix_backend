@@ -41,7 +41,12 @@ INSTALLED_APPS = [
     "content.apps.ContentConfig",
     "debug_toolbar",
     "django_rq",
+    "import_export",
 ]
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static/staticfiles")
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
@@ -67,9 +72,9 @@ RQ_QUEUES = {
         # 'USERNAME': 'some-user',
         # 'PASSWORD': 'some-password',
         'DEFAULT_TIMEOUT': 360,
-        'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
-            'ssl_cert_reqs': None,
-        },
+        # 'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
+        #     'ssl_cert_reqs': None,
+        # },
     },
     # 'high': {
     #     'URL': os.getenv('REDISTOGO_URL', 'redis://localhost:6379/0'), # If you're on Heroku
