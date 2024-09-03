@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django_rq",
     "import_export",
     "users",
+    "rest_framework",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
