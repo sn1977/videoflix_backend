@@ -27,8 +27,12 @@ SECRET_KEY = "django-insecure-(v5fm-b0v5(+_u5og6hfs^q*7v=9t_hjevxhuu^m=jc5ft(ane
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+  'localhost',
+  '127.0.0.1'
+]
 
+CORS_ALLOWED_ORIGINS = [ "http://localhost:4200" ]
 
 # Application definition
 
@@ -45,6 +49,7 @@ INSTALLED_APPS = [
     "import_export",
     "users",
     "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
@@ -54,6 +59,7 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 STATIC_ROOT = os.path.join(BASE_DIR, "static/staticfiles")
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -66,17 +72,17 @@ MIDDLEWARE = [
 
 INTERNAL_IPS = [
     # Füge deine IP-Adresse hinzu. Zum Beispiel:
-    '127.0.0.1',
+    "127.0.0.1",
 ]
 
 RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
+    "default": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 0,
         # 'USERNAME': 'some-user',
         # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
+        "DEFAULT_TIMEOUT": 360,
         # 'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
         #     'ssl_cert_reqs': None,
         # },
@@ -177,7 +183,6 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-
 sentry_sdk.init(
     dsn="https://a4fef9e49d1c7225b0095c56cc06e011@o4507877077024768.ingest.de.sentry.io/4507877122834512",
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -188,3 +193,10 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+}
