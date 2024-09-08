@@ -8,6 +8,7 @@ from content.models import Video
 from content.serializers import VideoSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 # Create your views here.
 
@@ -44,6 +45,8 @@ class VideoView(generics.ListCreateAPIView):
   serializer_class = VideoSerializer
   # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
   # permission_classes = [IsAuthenticated]
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAuthenticated]
   
   # def perform_create(self, serializer):
   #   serializer.save(owner=self.request.user)
