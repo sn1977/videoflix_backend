@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+from xml.etree.ElementInclude import default_loader
 import sentry_sdk
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,6 +33,7 @@ ALLOWED_HOSTS = [
   '127.0.0.1'
 ]
 
+
 CORS_ALLOWED_ORIGINS = [ "http://localhost:4200" ]
 
 # Application definition
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     "users",
     "rest_framework",
     "rest_framework.authtoken",
+    "corsheaders",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"
@@ -198,5 +201,6 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }
