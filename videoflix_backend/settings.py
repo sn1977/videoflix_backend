@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOWED_ORIGINS = [ "http://localhost:4200" ]
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -201,6 +202,6 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
     ]
 }

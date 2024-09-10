@@ -43,10 +43,9 @@ class LoginView(ObtainAuthToken):
 class VideoView(generics.ListCreateAPIView):
   queryset = Video.objects.all()
   serializer_class = VideoSerializer
-  # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-  # permission_classes = [IsAuthenticated]
+
   authentication_classes = [TokenAuthentication]
   permission_classes = [IsAuthenticated]
-  
+
   # def perform_create(self, serializer):
   #   serializer.save(owner=self.request.user)
