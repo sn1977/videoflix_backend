@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 import debug_toolbar
 
-from content.views import LoginView, VideoView
+from content.views import LoginView, RegisterView, VideoView
 
 # //NOTE - this is for testing Sentry
 def trigger_error(request):
@@ -29,7 +29,8 @@ def trigger_error(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', LoginView.as_view()),
-    path('video_selection/', VideoView.as_view()),
+    path('register/', RegisterView.as_view()),
+    path('video_selection/', VideoView.as_view(), name='register'),
     path('__debug__/', include(debug_toolbar.urls)),
     path('django-rq/', include('django_rq.urls')),
     path('sentry-debug/', trigger_error) # //NOTE - this is for testing Sentry
