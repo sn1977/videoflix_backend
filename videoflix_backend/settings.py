@@ -32,11 +32,19 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://localhost:50453"]
 
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:4200",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
     "corsheaders",
     "django.contrib.admin",
+    'django_registration',
+    'django.contrib.sites',  # Notwendig für django-registration
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -50,6 +58,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
 ]
+
+SITE_ID = 1  # Stelle sicher, dass dies gesetzt ist
 
 AUTH_USER_MODEL = "users.CustomUser"
 
@@ -202,3 +212,17 @@ REST_FRAMEWORK = {
 }
 
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
+
+# settings.py
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Zum Testen
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'w01ee17a.kasserver.com'
+EMAIL_PORT = 465  # Oder der Port deines Providers
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+# EMAIL_USE_TLS = True  # Oder False, je nach Provider
+EMAIL_HOST_USER = 'contact@sascha-nemeth.com'
+EMAIL_HOST_PASSWORD = 'QHMQ4DYikroTzXWdA3EX'
+DEFAULT_FROM_EMAIL = 'contact@sascha-nemeth.com'
