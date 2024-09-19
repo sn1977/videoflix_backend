@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 import debug_toolbar
 
-from content.views import LoginView, CustomRegistrationView, VideoView
+from content.views import ActivationAPIView, LoginView, CustomRegistrationView, VideoView
 
 # //NOTE - this is for testing Sentry
 def trigger_error(request):
@@ -32,6 +32,7 @@ urlpatterns = [
     # path('register/', RegisterView.as_view()),
     path('register/', CustomRegistrationView.as_view(), name='django_registration_register'),
     path('video_selection/', VideoView.as_view(), name='register'),
+    path('activate/<str:uidb64>/<str:token>/', ActivationAPIView.as_view(), name='activation-api'),
     path('accounts/', include('django_registration.backends.activation.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
