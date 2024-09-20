@@ -72,81 +72,7 @@ class VideoView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-# @method_decorator(csrf_exempt, name='dispatch')  # CSRF-Schutz für diese View deaktivieren
-# class CustomRegistrationView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = RegisterSerializer(data=request.data)
-#         if serializer.is_valid():
-#             user = serializer.save()
-#             self.send_activation_email(user, request)
-#             return Response({
-#                 "message": "User created successfully. Please check your email to activate your account."
-#             }, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-      
-# # class CustomRegistrationView(APIView):
-# #     def post(self, request, *args, **kwargs):
-# #         serializer = RegisterSerializer(data=request.data)
-# #         if serializer.is_valid():
-# #             user = serializer.save()
-# #             user.is_active = False  # Benutzer inaktiv setzen, bis E-Mail bestätigt wurde
-# #             user.save()
-# #             # Aktivierungs-E-Mail senden
-# #             self.send_activation_email(user, request)
-# #             return Response({
-# #                 "message": "User created successfully. Please check your email to activate your account."
-# #             }, status=status.HTTP_201_CREATED)
-# #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#     # def send_activation_email(self, user, request):
-#     #     from django_registration.backends.activation.views import RegistrationView
-#     #     registration_view = RegistrationView()
-#     #     activation_key = registration_view.get_activation_key(user)
-#     #     activation_url = request.build_absolute_uri(
-#     #         reverse('django_registration_activate', args=[activation_key])
-#     #     )
-#     #     subject = 'Activate your account'
-#     #     message = f'Please activate your account by clicking the following link: {activation_url}'
-#     #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-    
-#     # def send_activation_email(self, user, request):
-      
-#     #     activation_key = RegistrationView().get_activation_key(user)
-#     #     # URL zum Frontend
-#     #     activation_url = f'http://localhost:4200/activate/{activation_key}'  # Passen Sie die Domain an
-
-#     #     subject = 'Activate your account'
-#     #     message = f'Please activate your account by clicking the following link: {activation_url}'
-#     #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-        
-        
-#     def send_activation_email(self, user, request):
-#         token = default_token_generator.make_token(user)
-#         uid = urlsafe_base64_encode(force_bytes(user.pk))
-#         activation_url = f'http://localhost:4200/activate/{uid}/{token}/'  # Passen Sie die Domain an
-#         subject = 'Activate your account'
-#         message = f'Please activate your account by clicking the following link: {activation_url}'
-#         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])    
-        
-# @method_decorator(csrf_exempt, name='dispatch')        
-# class ActivationAPIView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def get(self, request, uidb64, token, format=None):
-#         try:
-#             uid = force_str(urlsafe_base64_decode(uidb64))
-#             User = get_user_model()
-#             user = User.objects.get(pk=uid)
-#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-#             user = None
-
-#         if user is not None and default_token_generator.check_token(user, token):
-#             user.is_active = True
-#             user.save()
-#             return Response({'message': 'Account successfully activated.'}, status=status.HTTP_200_OK)
-#         else:
-#             return Response({'error': 'Activation link is invalid or has expired.'}, status=status.HTTP_400_BAD_REQUEST)
-          
 @method_decorator(csrf_exempt, name='dispatch')
 class CustomRegistrationView(APIView):
     permission_classes = [AllowAny]
@@ -166,7 +92,8 @@ class CustomRegistrationView(APIView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         activation_url = f'http://localhost:4200/activate/{uid}/{token}/'  # Passen Sie die Domain an
         subject = 'Activate your account'
-        message = f'Please activate your account by clicking the following link: {activation_url}'
+        # message = f'Please activate your account by clicking the following link: {activation_url}'
+        message = f'Dear {user.first_name} {user.last_name},\n\nPlease activate your account by clicking the following link:\n{activation_url}\n\nThank you! Your Videoflix-Team'
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 class ActivationAPIView(APIView):
