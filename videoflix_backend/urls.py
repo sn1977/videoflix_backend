@@ -28,7 +28,7 @@ def trigger_error(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', LoginView.as_view()),
+    path('login/', LoginView.as_view(), name='login'),
     # path('register/', RegisterView.as_view()),
     path('register/', CustomRegistrationView.as_view(), name='django_registration_register'),
     path('video_selection/', VideoView.as_view(), name='register'),

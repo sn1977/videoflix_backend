@@ -5,6 +5,10 @@ from rest_framework.serializers import ModelSerializer, CharField
 
 from users.models import CustomUser 
 
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,4 +33,37 @@ class RegisterSerializer(ModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
-        return user      
+        return user   
+      
+      
+      
+class EmailOrUsernameAuthTokenSerializer(serializers.Serializer):
+    email_or_username = serializers.CharField(label=_("Email or Username"), write_only=True)
+    password = serializers.CharField(label=_("Password"), style={'input_type': 'password'}, trim_whitespace=False, write_only=True)
+
+    def validate(self, attrs):
+        email_or_username = attrs.get('email_or_username')
+        password = attrs.get('password')
+
+        if email_or_username and password:
+            # Versuche, den Benutzer anhand des Benutzernamens zu authentifizieren
+            user = authenticate(request=self.context.get('request'), username=email_or_username, password=password)
+            if not user:
+                # Versuche, den Benutzer anhand der E-Mail zu authentifizieren
+                UserModel = get_user_model()
+                try:
+                    user_obj = UserModel.objects.get(email=email_or_username)
+                    # user_qs = UserModel.objects.filter(email=email_or_username)
+                    user = authenticate(request=self.context.get('request'), username=user_obj.username, password=password)
+                except UserModel.DoesNotExist:
+                    pass
+
+            if not user:
+                msg = _('Unable to log in with provided credentials.')
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = _('Must include "email_or_username" and "password".')
+            raise serializers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs       

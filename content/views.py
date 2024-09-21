@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from content.models import Video
-from content.serializers import RegisterSerializer, VideoSerializer
+from content.serializers import EmailOrUsernameAuthTokenSerializer, RegisterSerializer, VideoSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
@@ -29,6 +29,12 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import get_user_model
 
+from django.contrib.auth import authenticate, get_user_model
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+
 
 # Create your views here.
 
@@ -47,7 +53,26 @@ from django.contrib.auth import get_user_model
 # @cachepage(CACHETTL)
 
 
+# class LoginView(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(
+#             data=request.data, context={"request": request}
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data["user"]
+#         token, created = Token.objects.get_or_create(user=user)
+#         return Response(
+#             {
+#                 "token": token.key,
+#                 "user_id": user.pk,
+#                 "email": user.email,
+#                 "username": user.username,
+#             }
+#         )
+
 class LoginView(ObtainAuthToken):
+    serializer_class = EmailOrUsernameAuthTokenSerializer
+
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
             data=request.data, context={"request": request}
@@ -63,7 +88,6 @@ class LoginView(ObtainAuthToken):
                 "username": user.username,
             }
         )
-
 
 class VideoView(generics.ListCreateAPIView):
     queryset = Video.objects.all()
