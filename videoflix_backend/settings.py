@@ -222,7 +222,6 @@ EMAIL_HOST = 'w01ee17a.kasserver.com'
 EMAIL_PORT = 465  # Oder der Port deines Providers
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
-# EMAIL_USE_TLS = True  # Oder False, je nach Provider
 EMAIL_HOST_USER = 'contact@sascha-nemeth.com'
 EMAIL_HOST_PASSWORD = 'QHMQ4DYikroTzXWdA3EX'
 DEFAULT_FROM_EMAIL = 'contact@sascha-nemeth.com'

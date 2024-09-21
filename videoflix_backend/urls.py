@@ -19,7 +19,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 import debug_toolbar
 
-from content.views import ActivationAPIView, LoginView, CustomRegistrationView, VideoView
+from content.views import ActivationAPIView, LoginView, CustomRegistrationView, PasswordResetConfirmView, RequestPasswordResetView, VideoView
+
 
 # //NOTE - this is for testing Sentry
 def trigger_error(request):
@@ -35,6 +36,8 @@ urlpatterns = [
     path('activate/<str:uidb64>/<str:token>/', ActivationAPIView.as_view(), name='activation-api'),
     path('accounts/', include('django_registration.backends.activation.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('password-reset/', RequestPasswordResetView.as_view(), name='password_reset'),
+    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('__debug__/', include(debug_toolbar.urls)),
     path('django-rq/', include('django_rq.urls')),
     path('sentry-debug/', trigger_error) # //NOTE - this is for testing Sentry
