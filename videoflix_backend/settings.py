@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from xml.etree.ElementInclude import default_loader
 import sentry_sdk
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -214,6 +215,8 @@ REST_FRAMEWORK = {
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
 
 # settings.py
+
+load_dotenv()
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Zum Testen
 
