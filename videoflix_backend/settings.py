@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_rq",
     "import_export",
-    "users",
+    # "users",
+    'users.apps.UsersConfig',
     "rest_framework",
     "rest_framework.authtoken",
 ]
@@ -216,3 +217,6 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+# Frontend-URL für Aktivierungslinks
+FRONTEND_URL = os.environ.get('FRONTEND_URL')

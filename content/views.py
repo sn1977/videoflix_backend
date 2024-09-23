@@ -106,30 +106,20 @@ class CustomRegistrationView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            self.send_activation_email(user, request)
             return Response({
                 "message": "User created successfully. Please check your email to activate your account."
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # def send_activation_email(self, user, request):
-    #     token = default_token_generator.make_token(user)
-    #     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    #     activation_url = f'http://localhost:4200/activate/{uid}/{token}/'  # Passen Sie die Domain an
-    #     subject = 'Activate your account'
-    #     # message = f'Please activate your account by clicking the following link: {activation_url}'
-    #     message = f'Dear {user.first_name} {user.last_name},\n\nPlease activate your account by clicking the following link:\n{activation_url}\n\nThank you! Your Videoflix-Team'
-    #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-        
-    def send_activation_email(self, user, request):
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        activation_url = f'{request.scheme}://{request.get_host()}/activate/{uid}/{token}/'
-        subject = 'Activate your account'
-        message = f'Dear {user.first_name} {user.last_name},\n\nPlease activate your account by clicking the following link:\n{activation_url}\n\nThank you! Your Videoflix-Team'
-        from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [user.email]
-        send_mail(subject, message, from_email, recipient_list)
+def send_activation_email(user):
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    activation_url = f'{settings.FRONTEND_URL}/activate/{uid}/{token}/'
+    subject = 'Activate your account'
+    message = f'Dear {user.first_name} {user.last_name},\n\nPlease activate your account by clicking the following link:\n{activation_url}\n\nThank you! Your Videoflix-Team'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [user.email]
+    send_mail(subject, message, from_email, recipient_list)
 
 class ActivationAPIView(APIView):
     permission_classes = [AllowAny]

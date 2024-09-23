@@ -7,3 +7,9 @@ class ContentConfig(AppConfig):
     
     def ready(self):
         from . import signals
+
+class UsersConfig(AppConfig):
+    name = 'users'  
+
+    def ready(self):
+        from . import signals
