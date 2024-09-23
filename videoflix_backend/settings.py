@@ -27,6 +27,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:4200",
 ]
 
+CACHE_TTL = 60 * 15  # 15 minutes
+
 # Application definition
 
 INSTALLED_APPS = [

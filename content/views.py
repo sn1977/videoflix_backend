@@ -36,6 +36,11 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.views.decorators.cache import cache_page 
+from django.utils.decorators import method_decorator
+
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 # Create your views here.
 
@@ -45,13 +50,13 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 # 09 - Redis Caching
 # Guter Artikel: https://realpython.com/caching-in-django-with-redis/
 # In der views.py
-# from django.core.cache.backends.base import DEFAULTTIMEOUT
-# from django.views.decorators.cache importcachepage from django.conf import settings
+# from django.core.cache.backends.base import DEFAULT_TIMEOUT
+# from django.views.decorators.cache import cache_page 
 
-# CACHETTL = getattr(settings, 'CACHETTL', DEFAULT_TIMEOUT)
+# CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 # Über die FunktionÜber die Funktion
-# @cachepage(CACHETTL)
+# @cache_page(CACHE_TTL)
 
 
 # class LoginView(ObtainAuthToken):
@@ -74,6 +79,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 class LoginView(ObtainAuthToken):
     serializer_class = EmailOrUsernameAuthTokenSerializer
 
+    @method_decorator(cache_page(CACHE_TTL))
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(
             data=request.data, context={"request": request}
@@ -102,6 +108,7 @@ class VideoView(generics.ListCreateAPIView):
 class CustomRegistrationView(APIView):
     permission_classes = [AllowAny]
 
+    @method_decorator(cache_page(CACHE_TTL))
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
