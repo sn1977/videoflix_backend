@@ -32,3 +32,6 @@ def convert_1080p(source):
     # ffmpeg-Befehl
     cmd = 'ffmpeg -i "{}" -s hd1080 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, target)
     subprocess.run(cmd, shell=True)
+    
+    # TODO - add a task to delete the original video file after all conversions are done
+    # TODO - add HLS conversion
