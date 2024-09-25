@@ -12,7 +12,8 @@ def convert_360p(source):
     # Neues Ziel mit angehängter Auflösung und neuer Endung
     target = str(source_path.with_suffix('')) + '_360p.mp4'
     # ffmpeg-Befehl
-    cmd = 'ffmpeg -i "{}" -s hd360 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, target)
+    # cmd = 'ffmpeg -i "{}" -s 640x360 -c:v libx264 -crf 23 -c:a aac -strict -2 "{}"'.format(source, target)
+    cmd = f'ffmpeg -i "{source}" -s 640x360 -c:v libx264 -crf 23 -c:a aac "{target}"'
     subprocess.run(cmd, shell=True)
     
 def convert_720p(source):
