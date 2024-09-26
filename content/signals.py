@@ -2,7 +2,7 @@ import os
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 
-from content.tasks import convert_360p, convert_720p, convert_1080p
+from content.tasks import convert_360p, convert_720p, convert_1080p, convert_hls
 from .models import Video
 import django_rq
 
@@ -20,6 +20,7 @@ def video_post_save(sender, instance, created, **kwargs):
     # convert_360p(instance.video_file.path)
     queue.enqueue(convert_720p, instance.video_file.path)
     queue.enqueue(convert_1080p, instance.video_file.path)
+    queue.enqueue(convert_hls, instance.video_file.path)  # HLS-Konvertierung hinzufügen
     
 @receiver(post_delete, sender=Video)
 def auto_delete_file_on_delete(sender, instance, **kwargs):

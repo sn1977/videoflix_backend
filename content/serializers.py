@@ -10,12 +10,33 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 
 
+# class VideoSerializer(serializers.ModelSerializer):
+#     hls_url = serializers.ReadOnlyField()
+
+#     class Meta:
+#         model = Video
+#         fields = '__all__'
+        
 class VideoSerializer(serializers.ModelSerializer):
+    hls_url = serializers.SerializerMethodField()
+    video_file = serializers.SerializerMethodField()
+
     class Meta:
         model = Video
         fields = '__all__'
-        
-      
+
+    def get_hls_url(self, obj):
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.hls_url)
+        return obj.hls_url
+
+    def get_video_file(self, obj):
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.video_file.url)
+        return obj.video_file.url
+    
 class RegisterSerializer(ModelSerializer):
     password = CharField(write_only=True)
 
@@ -67,3 +88,4 @@ class EmailOrUsernameAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs       
+      
