@@ -119,14 +119,66 @@ class CustomRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def send_activation_email(user):
+    # Generiere Token und UID
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
+    
+    # Erstelle die Aktivierungs-URL
     activation_url = f'{settings.FRONTEND_URL}/activate/{uid}/{token}/'
+    
+    # E-Mail Betreff
     subject = 'Activate your account'
-    message = f'Dear {user.first_name} {user.last_name},\n\nPlease activate your account by clicking the following link:\n{activation_url}\n\nThank you! Your Videoflix-Team'
+    
+    # Reine Text-Nachricht (Fallback)
+    plain_message = f"""
+    Dear {user.first_name} {user.last_name},
+
+    Thank you for registering with Videoflix. To complete your registration and verify your email address, please click the link below:
+
+    {activation_url}
+
+    If you did not create an account with us, please disregard this email.
+
+    Best regards,
+    Your Videoflix Team
+    """
+    
+    # HTML-Nachricht
+    html_message = f"""
+    <p>Dear {user.first_name} {user.last_name},</p>
+    
+    <p>Thank you for registering with <span style="color:hsl(235, 73%, 53%);">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
+    
+    <p>
+        <a href="{activation_url}" style="
+            background-color: hsl(235, 73%, 53%);
+            color: white;
+            text-decoration: none;
+            padding: 0.5em 1.5em;
+            border-radius: 3em;
+        ">
+            Activate Account
+        </a>
+    </p>
+    
+    <p>If you did not create an account with us, please disregard this email.</p>
+    
+    <p>Best regards,</p>
+    <p>Your Videoflix Team</p>
+    """
+    
+    # Absender und Empfänger
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = [user.email]
-    send_mail(subject, message, from_email, recipient_list)
+    
+    # Sende die E-Mail mit HTML-Inhalt
+    send_mail(
+        subject=subject,
+        message=plain_message,        # Reine Text-Nachricht
+        from_email=from_email,
+        recipient_list=recipient_list,
+        html_message=html_message      # HTML-Nachricht
+    )
 
 class ActivationAPIView(APIView):
     permission_classes = [AllowAny]
