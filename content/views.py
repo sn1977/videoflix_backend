@@ -5,7 +5,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from content.models import Video
-from content.serializers import EmailOrUsernameAuthTokenSerializer, RegisterSerializer, VideoSerializer
+from content.serializers import (
+    EmailOrUsernameAuthTokenSerializer,
+    RegisterSerializer,
+    VideoSerializer,
+)
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
@@ -20,6 +24,7 @@ from django.conf import settings
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+
 # from django_registration.backends.activation import ActivationBackend
 from django.contrib.auth.tokens import default_token_generator
 
@@ -37,10 +42,14 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
-from django.views.decorators.cache import cache_page 
+from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
-CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
+import logging
+
+logger = logging.getLogger(__name__)
+
+CACHE_TTL = getattr(settings, "CACHE_TTL", DEFAULT_TIMEOUT)
 
 # Create your views here.
 
@@ -51,7 +60,7 @@ CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 # Guter Artikel: https://realpython.com/caching-in-django-with-redis/
 # In der views.py
 # from django.core.cache.backends.base import DEFAULT_TIMEOUT
-# from django.views.decorators.cache import cache_page 
+# from django.views.decorators.cache import cache_page
 
 # CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -76,6 +85,7 @@ CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 #             }
 #         )
 
+
 class LoginView(ObtainAuthToken):
     serializer_class = EmailOrUsernameAuthTokenSerializer
 
@@ -96,6 +106,7 @@ class LoginView(ObtainAuthToken):
             }
         )
 
+
 class VideoView(generics.ListCreateAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
@@ -104,7 +115,7 @@ class VideoView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class CustomRegistrationView(APIView):
     permission_classes = [AllowAny]
 
@@ -113,22 +124,26 @@ class CustomRegistrationView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response({
-                "message": "User created successfully. Please check your email to activate your account."
-            }, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "message": "User created successfully. Please check your email to activate your account."
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def send_activation_email(user):
     # Generiere Token und UID
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    
+
     # Erstelle die Aktivierungs-URL
-    activation_url = f'{settings.FRONTEND_URL}/activate/{uid}/{token}/'
-    
+    activation_url = f"{settings.FRONTEND_URL}/activate/{uid}/{token}/"
+
     # E-Mail Betreff
-    subject = 'Activate your account'
-    
+    subject = "Activate your account"
+
     # Reine Text-Nachricht (Fallback)
     plain_message = f"""
     Dear {user.first_name} {user.last_name},
@@ -142,9 +157,13 @@ def send_activation_email(user):
     Best regards,
     Your Videoflix Team
     """
-    
+
     # HTML-Nachricht
     html_message = f"""
+    <div style="text-align: center; margin-bottom: 20px;">
+              <img src="http://localhost:4200/assets/img/logo_transparent.png" alt="Videoflix Logo" style="max-width: 200px; height: auto;">
+    </div>
+    
     <p>Dear {user.first_name} {user.last_name},</p>
     
     <p>Thank you for registering with <span style="color:hsl(235, 73%, 53%);">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
@@ -166,19 +185,20 @@ def send_activation_email(user):
     <p>Best regards,</p>
     <p>Your Videoflix Team</p>
     """
-    
+
     # Absender und Empfänger
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = [user.email]
-    
+
     # Sende die E-Mail mit HTML-Inhalt
     send_mail(
         subject=subject,
-        message=plain_message,        # Reine Text-Nachricht
+        message=plain_message,  # Reine Text-Nachricht
         from_email=from_email,
         recipient_list=recipient_list,
-        html_message=html_message      # HTML-Nachricht
+        html_message=html_message,  # HTML-Nachricht
     )
+
 
 class ActivationAPIView(APIView):
     permission_classes = [AllowAny]
@@ -194,19 +214,27 @@ class ActivationAPIView(APIView):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({'message': 'Account successfully activated.'}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Account successfully activated."},
+                status=status.HTTP_200_OK,
+            )
         else:
-            return Response({'error': 'Activation link is invalid or has expired.'}, status=status.HTTP_400_BAD_REQUEST)
-          
-          
+            return Response(
+                {"error": "Activation link is invalid or has expired."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
+        email = request.data.get("email")
 
         if not email:
-            return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         User = get_user_model()
         try:
@@ -215,36 +243,105 @@ class RequestPasswordResetView(APIView):
             token = token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             # Passe die Domain an
-            reset_url = f'http://localhost:4200/reset-password/{uid}/{token}/'
-            subject = 'Reset your password'
-            message = f'Dear {user.first_name},\n\nPlease reset your password by clicking the following link:\n{reset_url}\n\nThank you! Your Videoflix-Team'
+            reset_url = f"http://localhost:4200/reset-password/{uid}/{token}/"
+            subject = "Reset your password"
+            # Reine Text-Nachricht (Fallback)
+            plain_message = f"To reset your password, follow this link: {reset_url}"
+
+            # HTML-Nachricht
+            html_message = f"""
+            <p>Dear {user.first_name} {user.last_name},</p>
+            
+            <p>We recently received a request to reset your password. If you made this request, please click on the following link to reset your password:</p>
+            
+            <p>
+                <a href="{reset_url}" style="
+                    background-color: hsl(235, 73%, 53%);
+                    color: white;
+                    text-decoration: none;
+                    padding: 0.5em 1.5em;
+                    border-radius: 3em;
+                    display: inline-block;
+                ">
+                    Reset password
+                </a>
+            </p>
+            
+            <p>Please note that for security reasons, this link is only valid for 24 hours.</p>
+            
+            <p>If you did not request a password reset, please ignore this email.</p>
+            
+            <p>Best regards,</p>
+            <p>Your Videoflix Team</p>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="http://localhost:4200/assets/img/logo_transparent.png" alt="Videoflix Logo" style="max-width: 200px; height: auto;">
+            </div>
+            """
+
             from_email = settings.DEFAULT_FROM_EMAIL
-            send_mail(subject, message, from_email, [user.email])
-            return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
+            recipient_list = [user.email]
+
+            # Sende die E-Mail mit HTML-Inhalt
+            send_mail(
+                subject=subject,
+                message=plain_message,  # Reine Text-Nachricht
+                from_email=from_email,
+                recipient_list=recipient_list,
+                html_message=html_message,  # HTML-Nachricht
+            )
+
+            logger.info(f"Password reset email sent to {user.email}")
+
+            return Response(
+                {"message": "Password reset link has been sent to your email."},
+                status=status.HTTP_200_OK,
+            )
+
         except User.DoesNotExist:
             # Aus Sicherheitsgründen geben wir dieselbe Antwort zurück
-            return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
-          
+            return Response(
+                {"message": "Password reset link has been sent to your email."},
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            logger.error(f"Error sending password reset email to {email}: {e}")
+            return Response(
+                {"error": "An error occurred while sending the password reset email."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
-        password = request.data.get('password')
+        password = request.data.get("password")
 
         if not password:
-            return Response({'error': 'Password is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             User = get_user_model()
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({'error': 'Invalid link.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid link."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         token_generator = PasswordResetTokenGenerator()
         if token_generator.check_token(user, token):
             user.set_password(password)
             user.save()
-            return Response({'message': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Password has been reset successfully."},
+                status=status.HTTP_200_OK,
+            )
         else:
-            return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
