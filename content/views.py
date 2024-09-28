@@ -4,8 +4,9 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from content.models import Video
+from content.models import Category, Video
 from content.serializers import (
+    CategorySerializer,
     EmailOrUsernameAuthTokenSerializer,
     RegisterSerializer,
     VideoSerializer,
@@ -105,6 +106,25 @@ class LoginView(ObtainAuthToken):
                 "username": user.username,
             }
         )
+        
+        
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.prefetch_related('videos').all()
+    serializer_class = CategorySerializer
+    # permission_classes = [IsAuthenticated]
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
+    
+    
+class VideoDetailView(generics.RetrieveAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    lookup_field = 'id'
+    # permission_classes = [IsAuthenticated]
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
 class VideoView(generics.ListCreateAPIView):

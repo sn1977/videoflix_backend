@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from content.models import Video
+from content.models import Category, Video
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer, CharField
 
@@ -20,6 +20,7 @@ from django.contrib.auth import get_user_model
 class VideoSerializer(serializers.ModelSerializer):
     hls_url = serializers.SerializerMethodField()
     video_file = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
 
     class Meta:
         model = Video
@@ -36,6 +37,19 @@ class VideoSerializer(serializers.ModelSerializer):
         if request:
             return request.build_absolute_uri(obj.video_file.url)
         return obj.video_file.url
+      
+    def get_thumbnail(self, obj):
+        request = self.context.get('request')
+        if obj.thumbnail and hasattr(obj.thumbnail, 'url'):
+            return request.build_absolute_uri(obj.thumbnail.url)
+        return ''  
+      
+class CategorySerializer(serializers.ModelSerializer):
+    videos = VideoSerializer(many=True, read_only=True)  # Videos in der Kategorie
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'videos']
     
 class RegisterSerializer(ModelSerializer):
     password = CharField(write_only=True)
