@@ -69,25 +69,23 @@ CACHE_TTL = getattr(settings, "CACHE_TTL", DEFAULT_TIMEOUT)
 # @cache_page(CACHE_TTL)
 
 
-# class LoginView(ObtainAuthToken):
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(
-#             data=request.data, context={"request": request}
-#         )
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data["user"]
-#         token, created = Token.objects.get_or_create(user=user)
-#         return Response(
-#             {
-#                 "token": token.key,
-#                 "user_id": user.pk,
-#                 "email": user.email,
-#                 "username": user.username,
-#             }
-#         )
-
-
 class LoginView(ObtainAuthToken):
+    """
+    View for handling user login and returning an authentication token.
+
+    This view extends ObtainAuthToken and uses the EmailOrUsernameAuthTokenSerializer
+    to validate the user's credentials. Upon successful authentication, it returns
+    a response containing the authentication token, user ID, email, and username.
+
+    Methods:
+      post(request, *args, **kwargs):
+        Handles POST requests for user login. Validates the provided credentials
+        and returns an authentication token along with user details.
+
+    Decorators:
+      @method_decorator(cache_page(CACHE_TTL)):
+        Caches the response for the duration specified by CACHE_TTL.
+    """
     serializer_class = EmailOrUsernameAuthTokenSerializer
 
     @method_decorator(cache_page(CACHE_TTL))
@@ -186,11 +184,11 @@ def send_activation_email(user):
     
     <p>Dear {user.first_name} {user.last_name},</p>
     
-    <p>Thank you for registering with <span style="color:hsl(235, 73%, 53%);">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
+    <p>Thank you for registering with <span style="color:#0d6efd;">Videoflix</span>. To complete your registration and verify your email address, please click the link below:</p>
     
     <p>
         <a href="{activation_url}" style="
-            background-color: hsl(235, 73%, 53%);
+            background-color: #0d6efd;
             color: white;
             text-decoration: none;
             padding: 0.5em 1.5em;
@@ -276,7 +274,7 @@ class RequestPasswordResetView(APIView):
             
             <p>
                 <a href="{reset_url}" style="
-                    background-color: hsl(235, 73%, 53%);
+                    background-color: #0d6efd;
                     color: white;
                     text-decoration: none;
                     padding: 0.5em 1.5em;
