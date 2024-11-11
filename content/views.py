@@ -109,7 +109,7 @@ class LoginView(ObtainAuthToken):
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.prefetch_related('videos').all()
     serializer_class = CategorySerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def get_serializer_context(self):
         return {'request': self.request}
