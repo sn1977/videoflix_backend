@@ -17,7 +17,7 @@ SECRET_KEY = "django-insecure-(v5fm-b0v5(+_u5og6hfs^q*7v=9t_hjevxhuu^m=jc5ft(ane
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "35.242.235.177", "gc-videoflixbackend.sascha-nemeth.com"]
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:50453"]
 
@@ -57,7 +57,8 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static/staticfiles")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -176,7 +177,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
