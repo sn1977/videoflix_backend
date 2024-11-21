@@ -19,7 +19,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "35.242.235.177", "gc-videoflixbackend.sascha-nemeth.com"]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:50453"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:50453", "https://videoflix.sascha-nemeth.com"]
 
 CORS_ALLOW_CREDENTIALS = True
 
